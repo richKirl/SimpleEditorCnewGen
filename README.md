@@ -5,4 +5,5 @@ SimpleEditorCnewGen
 
 best optimisation in/out, best draw-process, low-level ansi implementation. with basic structures it realy awesome works on this time. This is work on X11 only ;) - think will be adopt to win/wayland
 
-<img width="810" height="658" alt="image" src="https://github.com/user-attachments/assets/e5db1b40-54ab-47c9-926d-e85b28d54251" />
+<img width="808" height="715" alt="image" src="https://github.com/user-attachments/assets/a15bf078-3dd4-418a-bfdb-4523478c9038" />
+
