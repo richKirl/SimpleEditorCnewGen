@@ -220,7 +220,7 @@ int main(int argc,char **argv) {
   XftFont *font = XftFontOpenName(
 				  dpy,
 				  screen,
-				  "Ubuntu Mono:pixelsize=14");
+				  "Ubuntu Mono");
 
   //XftFont *font1 = XftFontOpenName(dpy, screen, "Noto Color Emoji");
   //XftFontOpenPattern(dpy, );
@@ -326,7 +326,7 @@ int main(int argc,char **argv) {
   //buf.sz+=sizeof(char)*strlen(buf.string[cLine]->data);
   printf("%zu\n",buf.sz);
 
-  fclose(sFile);
+   fclose(sFile);
   ////////////////////////////////////////////////////////////////////////////
   char bufPanel[512];
   cLine=0;
@@ -511,7 +511,7 @@ int main(int argc,char **argv) {
 	  XftTextExtents32(dpy, font, &character, 1, &ginfo);
 
 	  //int cursor_x = 10 + cPos * ginfo.width;
-	  int cursor_x = 10 + cPos * 8;
+	  int cursor_x = 10 + cPos * ginfo.width;
 	  int cursor_y = (cLine + 1) * 20 - 15;
 	  XSetForeground(dpy, gc, 0x00AA00); // черный цвет
 	  XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16);
@@ -599,48 +599,49 @@ int main(int argc,char **argv) {
 	    }
 	  }
 	} else if (keysym == XK_Down) {
+	  cLine++;
 	  size_t maxVisibleLines = xY / 20;
 	  if (topLine+maxVisibleLines-2 < cLine+1) {
 	    printf("NewPage1str++\n");
-	    /* topLine++; */
-	    /* cLine=topLine; */
-	    /* XClearWindow(dpy, win); */
-	    /* XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
-	    /* if (draw) { */
-	    /*   size_t linesOnScreen = xY / 20; */
-	    /*   if (topLine + linesOnScreen > buf.line) { */
-	    /* 	linesOnScreen = buf.line - topLine; */
-	    /*   } */
-	    /*   size_t i = 0; */
-	    /*   for (; i < linesOnScreen; ++i) { */
-	    /* 	size_t bufLineIndex = topLine + i; */
-	    /* 	XftDrawStringUtf8(draw,&color,font,10,(i + 1) * 20,(const FcChar8*)buf.string[bufLineIndex]->data,buf.string[bufLineIndex]->len); */
-	    /*   } */
-	    /*   XftDrawDestroy(draw); */
-	    /*   int cursor_x = 10 + cPos * 8; */
-	    /*   int cursor_y = (cLine + 1) * 20 - 15; */
-	    /*   XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	    /*   XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
-	    /*   //getSize */
-	    /*   printf("%d %d\n",xW,xY); */
-	    /*   // filePanel */
-	    /*   int pf_x = 0; */
-	    /*   int pf_y = 0; */
-	    /*   XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	    /*   XFillRectangle(dpy, win, gc, pf_x, pf_y, xW, 20); */
-	    /*   //panel */
-	    /*   int p_x = 0; */
-	    /*   int p_y = xY-16; */
-	    /*   XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	    /*   XFillRectangle(dpy, win, gc, p_x, p_y, xW, 16); */
-	    /*   XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
-	    /*   size_t lx=sprintf(bufPanel,"NameFile: test.c Chars: %zu",buf.sz); */
-	    /*   XftDrawStringUtf8(draw,&color,font,p_x+5,p_y+12,(const FcChar8 *)bufPanel,strlen(bufPanel)); */
+	    topLine++;
+	    //cLine=topLine;
+	    XClearWindow(dpy, win);
+	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
+	    if (draw) {
+	      size_t linesOnScreen = xY / 20;
+	      if (topLine + linesOnScreen > buf.line) {
+	    	linesOnScreen = buf.line - topLine;
+	      }
+	      size_t i = 0;
+	      for (; i < linesOnScreen; ++i) {
+	    	size_t bufLineIndex = topLine + i;
+	    	XftDrawStringUtf8(draw,&color,font,10,(i + 1) * 20,(const FcChar8*)buf.string[bufLineIndex]->data,buf.string[bufLineIndex]->len);
+	      }
+	      XftDrawDestroy(draw);
+	      int cursor_x = 10 + cPos * 8;
+	      int cursor_y = (cLine + 1) * 20 - 15;
+	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет
+	      XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16);
+	      //getSize
+	      printf("%d %d\n",xW,xY);
+	      // filePanel
+	      int pf_x = 0;
+	      int pf_y = 0;
+	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет
+	      XFillRectangle(dpy, win, gc, pf_x, pf_y, xW, 20);
+	      //panel
+	      int p_x = 0;
+	      int p_y = xY-16;
+	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет
+	      XFillRectangle(dpy, win, gc, p_x, p_y, xW, 16);
+	      XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
+	      size_t lx=sprintf(bufPanel,"NameFile: test.c Chars: %zu",buf.sz);
+	      XftDrawStringUtf8(draw,&color,font,p_x+5,p_y+12,(const FcChar8 *)bufPanel,strlen(bufPanel));
 	      //endpanel
 	    }
-	  //}
+	  }
 	else {
-	    cLine++;
+	  //cLine++;
 	    cPos=0;
 	      int cursor_x = 10 + cPos * 8;
 	      int cursor_y = (cLine + 1) * 20 - 15;
