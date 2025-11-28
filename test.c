@@ -302,9 +302,24 @@ int main(int argc,char **argv) {
       BufAddString(&buf, cLine);
 
     }
+    else if(character == '\t'){
+      char tempTab[8] ="       ";//подобрано из-за емакса пока временно
+      size_t inserted_len = stringAdds(
+				       buf.string[cLine],
+				       (int)cPos,
+				       (char*)&tempTab);
+      
+      cPos += inserted_len; // обновляем позицию
+
+
+      continue;
+    }
     else {
-      size_t inserted_len = stringAdds(buf.string[cLine],
-				       (int)cPos, (char*)&character);
+      size_t inserted_len = stringAdds(
+				       buf.string[cLine],
+				       (int)cPos,
+				       (char*)&character);
+      
       cPos += inserted_len; // обновляем позицию
     }
   }
@@ -564,6 +579,7 @@ int main(int argc,char **argv) {
 	  size_t maxVisibleLines = xY / 20;
 	  if (topLine + maxVisibleLines < buf.line) {
 	    topLine++;
+	    cLine=topLine;
 	    XClearWindow(dpy, win);
 	    XftDraw *draw = XftDrawCreate(dpy,
 					  win,
