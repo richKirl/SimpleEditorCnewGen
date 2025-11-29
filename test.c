@@ -383,6 +383,17 @@ int main(int argc,char **argv) {
   //Ubuntu Mono:pixelsize=14Noto Color Emoji
   XftFont *font = XftFontOpenName(dpy,screen,"Ubuntu Mono");
 
+  XGlyphInfo extents;
+  const char *character = "A"; // или любой символ
+  XftTextExtentsUtf8(dpy, font, (XftChar8*)character, 1, &extents);
+
+  // ширина глифа
+  int gw = extents.xOff;
+  // высота глифа - обычно равна высоте шрифта
+  int gh = font->height;
+
+  printf("WidthFont: %d HeightFont: %d\n",gw,gh);
+
   if (!font) {
     fprintf(stderr, "Не удалось загрузить шрифт\n");
     XCloseDisplay(dpy);
@@ -439,9 +450,8 @@ int main(int argc,char **argv) {
       break;
     case ConfigureNotify:
       // Handle the ConfigureNotify event
-      XConfigureEvent* configureEvent = &event.xconfigure;
-      xW=configureEvent->width;
-      xY=configureEvent->height;
+      xW=event.xconfigure.width;
+      xY=event.xconfigure.height;
       maxVisibleLines = xY / 20;
       break;
     case Expose:
@@ -449,7 +459,6 @@ int main(int argc,char **argv) {
 	XClearWindow(dpy, win);
 	XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
 	if (draw) {
-	  //size_t  = xY / 20;
           if (topLine + maxVisibleLines > buf.line) {
 	    maxVisibleLines = buf.line - topLine;
           }
@@ -499,7 +508,7 @@ int main(int argc,char **argv) {
 	    // иначе, курсор уже в конце текста, ничего не делаем
 	  }
 	  if(newLine){
-	    XClearArea(dpy,win,10+buf.string[cLine-1]->len*8,(cLine-1)*20+3,xW,20,False);
+	    XClearArea(dpy,win,10+buf.string[cLine-1]->rLen*8,(cLine-1)*20+3,xW,20,False);
 	  }
 	  XClearArea(dpy,win,10,(cLine)*20+3,xW,20,False);
 	  XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
@@ -511,53 +520,30 @@ int main(int argc,char **argv) {
 	  //printf("Right\n");
 	}
 	if (keysym == XK_Up) {
-	  cLine--;
-	  cPos=0;
-	  drawcCursor(dpy,win,gc);
-	  /* 	      int cursor_x = 10 + cPos * 8; */
-	  /* 	      int cursor_y = (cLine + 1) * 20 - 15; */
-	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	  /* 	      XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
-	  /* 	  if (cLine > 0) { */
-	  /* 	    cLine--; */
-	  /* 	    cPos=0; */
-	  /* 	    XClearWindow(dpy, win); */
-	  /* 	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
-	  /* 	    if (draw) { */
-	  /* 	      size_t linesOnScreen = xY / 20; */
-	  /* 	      if (cLine + linesOnScreen > buf.line) { */
-	  /* 		linesOnScreen = cLine - topLine; */
-	  /* 	      } */
-	  /* 	      size_t i = 0; */
-	  /* 	      for (; i < linesOnScreen; ++i) { */
-	  /* 		size_t bufLineIndex = cLine + i; */
-	  /* 		XftDrawStringUtf8(draw,&color,font,10,(i + 1) * 20,(const FcChar8*)buf.string[bufLineIndex]->data,buf.string[bufLineIndex]->len); */
-	  /* 	      } */
-	  /* 	      XftDrawDestroy(draw); */
-	  /* 	      int cursor_x = 10 + cPos * 8; */
-	  /* 	      int cursor_y = (cLine + 1) * 20 - 15; */
-	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	  /* 	      XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
-	  /* 	      //getSize */
-	  /* 	      printf("%d %d\n",xW,xY); */
-	  /* 	      // filePanel */
-	  /* 	      int pf_x = 0; */
-	  /* 	      int pf_y = 0; */
-	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	  /* 	      XFillRectangle(dpy, win, gc, pf_x, pf_y, xW, 20); */
-	  /* 	      //panel */
-	  /* 	      int p_x = 0; */
-	  /* 	      int p_y = xY-16; */
-	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-	  /* 	      XFillRectangle(dpy, win, gc, p_x, p_y, xW, 16); */
-	  /* 	      XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
-	  /* 	      size_t lx=sprintf(bufPanel,"NameFile: test.c Chars: %zu",buf.sz); */
-	  /* 	      XftDrawStringUtf8(draw,&color,font,p_x+5,p_y+12,(const FcChar8 *)bufPanel,strlen(bufPanel)); */
-	  /* 	      //endpanel */
-	  /* 	    } */
-	  /* 	  } */
-	     } else if (keysym == XK_Down) {
-	  if (topLine+maxVisibleLines-2 < buf.line) {
+	  if(topLine>0)topLine--;
+	  //cPos=0;
+	  //drawcCursor(dpy,win,gc);
+	  if (topLine+maxVisibleLines-1 < buf.line) {
+	    XClearWindow(dpy, win);
+	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
+	    if (draw) {
+	      //size_t linesOnScreen = xY / 20;
+	      if (topLine + maxVisibleLines > buf.line) {
+		maxVisibleLines = buf.line - topLine;
+	      }
+	      drawTextB(0,maxVisibleLines,draw,color,font,&buf);
+	      drawcCursor(dpy,win,gc);
+	      // filePanel
+	      drawTPanel(dpy,gc,win,0,0,xW,20,0x00AA00);//topPanel
+	      //panel
+	      drawBPanel(dpy,gc,win,0,xY,xW,16,0x00AA00,draw,color,font,&buf);//bottomPanel
+	      XftDrawDestroy(draw);
+	      //endpanel
+	    }
+	  }
+	} else if (keysym == XK_Down) {
+	  topLine++;
+	  if (topLine+maxVisibleLines-1 < buf.line) {
 	    //printf("NewPage1str++\n");
 	    topLine++;
 	    //cLine=topLine;
@@ -579,15 +565,15 @@ int main(int argc,char **argv) {
 	    }
 	  }
 	  else {
-	    cLine=topLine+maxVisibleLines-2;
-	    //cLine++;
-	    cPos=0;
-	    drawcCursor(dpy,win,gc);
-	    drawTPanel(dpy,gc,win,0,0,xW,20,0x00AA00);//topPanel
-	    //panel
-	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
-	    drawBPanel(dpy,gc,win,0,xY,xW,16,0x00AA00,draw,color,font,&buf);//bottomPanel
-	    XftDrawDestroy(draw);
+	    //cLine=topLine+maxVisibleLines-2;
+	    /* 	    cLine++; */
+	    /* 	    cPos=0; */
+	    /* 	    drawcCursor(dpy,win,gc); */
+	    /* 	    drawTPanel(dpy,gc,win,0,0,xW,20,0x00AA00);//topPanel */
+	    /* 	    //panel */
+	       /* 	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
+	       /* 	    drawBPanel(dpy,gc,win,0,xY,xW,16,0x00AA00,draw,color,font,&buf);//bottomPanel */
+	    /* 	    XftDrawDestroy(draw); */
 	  }
 	}
 	if (len > 0) {
