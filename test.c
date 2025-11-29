@@ -18,7 +18,6 @@ size_t minPos=0,maxPos=0;
 size_t topLine = 0;
 
 
-
 typedef struct {
   char* data;
   size_t len;
@@ -235,10 +234,6 @@ typedef struct {
 
 //topPanel
 void drawTPanel(Display *dpy,GC gc,Window win,int pf_x,int pf_y,int xW,int h,unsigned int col){
-  //printf("%d %d\n",xW,xY);
-  // filePanel
-  //int pf_x = 0;
-  //int pf_y = 0;
   XSetForeground(dpy, gc, col); // черный цвет0x00AA00
   XFillRectangle(dpy, win, gc, pf_x, pf_y, xW, h);
 }
@@ -250,12 +245,9 @@ void drawBPanel(Display *dpy,GC gc,Window win,int pf_x,int pf_y,int xW,int h,uns
   int p_y = pf_y-h;
   XSetForeground(dpy, gc, col); // черный цвет
   XFillRectangle(dpy, win, gc, p_x, p_y, xW, h);//16
-  //XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
   size_t lx=sprintf(bufPanel,"NameFile: test.c Totality Bytes: %zu Char Nums: %zu",buf->sz,buf->rsz);
   XftDrawStringUtf8(draw,&color,font,p_x+5,p_y+12,(const FcChar8 *)bufPanel,strlen(bufPanel));
 }
-
-
 
 //получение размера окна
 void getSizeWindow(Display *dpy,Window win,int *x,int *y){
@@ -280,9 +272,7 @@ size_t utf8_char_size(const unsigned char first_byte) {
   }
 }
 
-
 void openFile(Bufer *buf,const char* filename){
-
   /////////////////////////////////////////////////////////////////////////////
   FILE *sFile=0;
   sFile=fopen(filename,"rb");
@@ -305,10 +295,8 @@ void openFile(Bufer *buf,const char* filename){
   printf("Размер файла: %ld байт\n", file_size);
   printf("Contents of %s:\n", filename);
   int character;
-  //buf.sz=0;
   // Read and print characters until the end of the file (EOF)
   while ((character = fgetc(sFile)) != EOF) {
-    //putchar(character);
     if (character == '\n') {
       buf->sz+=sizeof(char)*buf->string[cLine]->len;//пока так
       //buf->sz=buf->line*cLine;
@@ -317,10 +305,9 @@ void openFile(Bufer *buf,const char* filename){
       maxLine++;
       cPos=0;
       BufAddString(buf, cLine);
-      
     }
     else if(character == '\t'){
-      char tempTab[8] ="       ";//подобрано из-за емакса пока временно
+      char tempTab[2] ="  ";//подобрано из-за емакса пока временно
       size_t inserted_len = stringAdds(buf->string[cLine],(int)cPos,(char*)&tempTab);     
       cPos += inserted_len;
       continue;
@@ -333,11 +320,8 @@ void openFile(Bufer *buf,const char* filename){
       symbol_buf[0] = first_byte;
       if ( symbol_size > 1) {
 	symbol_buf[1] = fgetc(sFile);
-	  
       }
-
       size_t inserted_len = stringAdds(buf->string[cLine],(int)cPos,(char*)&symbol_buf);
-      //printf("added %zu\n",inserted_len);
       cPos += inserted_len; // обновляем позицию
     }
   }
@@ -396,13 +380,9 @@ int main(int argc,char **argv) {
 
   GC gc = XCreateGC(dpy, win, 0, NULL);
 
-  //Ubuntu Mono:pixelsize=14
+  //Ubuntu Mono:pixelsize=14Noto Color Emoji
   XftFont *font = XftFontOpenName(dpy,screen,"Ubuntu Mono");
 
-  //XftFont *font1 = XftFontOpenName(dpy, screen, "Noto Color Emoji");
-  //XftFontOpenPattern(dpy, );
-  //XftFontCopy
-  //font[1]=XftFontOpenName(dpy, screen, "Noto Color Emoji");
   if (!font) {
     fprintf(stderr, "Не удалось загрузить шрифт\n");
     XCloseDisplay(dpy);
@@ -447,7 +427,6 @@ int main(int argc,char **argv) {
   cPos=0;
   int xW,xY;
   size_t maxVisibleLines = xY / 20;
-  //getSizeWindow(dpy,win,&xW,&xY);
   while (running) {
 
     XEvent event;
@@ -461,10 +440,9 @@ int main(int argc,char **argv) {
     case ConfigureNotify:
       // Handle the ConfigureNotify event
       XConfigureEvent* configureEvent = &event.xconfigure;
-      //getSizeWindow(dpy,win,&xW,&xY);
       xW=configureEvent->width;
       xY=configureEvent->height;
-      size_t maxVisibleLines = xY / 20;
+      maxVisibleLines = xY / 20;
       break;
     case Expose:
       {
@@ -561,26 +539,26 @@ int main(int argc,char **argv) {
 	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
 	  /* 	      XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
 	  /* 	      //getSize */
-	     /* 	      printf("%d %d\n",xW,xY); */
-	     /* 	      // filePanel */
-		/* 	      int pf_x = 0; */
-		/* 	      int pf_y = 0; */
-		/* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
+	  /* 	      printf("%d %d\n",xW,xY); */
+	  /* 	      // filePanel */
+	  /* 	      int pf_x = 0; */
+	  /* 	      int pf_y = 0; */
+	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
 	  /* 	      XFillRectangle(dpy, win, gc, pf_x, pf_y, xW, 20); */
 	  /* 	      //panel */
-	     /* 	      int p_x = 0; */
-	     /* 	      int p_y = xY-16; */
-	     /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
+	  /* 	      int p_x = 0; */
+	  /* 	      int p_y = xY-16; */
+	  /* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
 	  /* 	      XFillRectangle(dpy, win, gc, p_x, p_y, xW, 16); */
 	  /* 	      XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen)); */
 	  /* 	      size_t lx=sprintf(bufPanel,"NameFile: test.c Chars: %zu",buf.sz); */
 	  /* 	      XftDrawStringUtf8(draw,&color,font,p_x+5,p_y+12,(const FcChar8 *)bufPanel,strlen(bufPanel)); */
 	  /* 	      //endpanel */
-	     /* 	    } */
-	     /* 	  } */
+	  /* 	    } */
+	  /* 	  } */
 	     } else if (keysym == XK_Down) {
 	  if (topLine+maxVisibleLines-2 < buf.line) {
-	    printf("NewPage1str++\n");
+	    //printf("NewPage1str++\n");
 	    topLine++;
 	    //cLine=topLine;
 	    XClearWindow(dpy, win);
@@ -591,7 +569,6 @@ int main(int argc,char **argv) {
 	    	maxVisibleLines = buf.line - topLine;
 	      }
 	      drawTextB(0,maxVisibleLines,draw,color,font,&buf);
-	      
 	      drawcCursor(dpy,win,gc);
 	      // filePanel
 	      drawTPanel(dpy,gc,win,0,0,xW,20,0x00AA00);//topPanel
@@ -634,7 +611,6 @@ int main(int argc,char **argv) {
 	    running = 0;
 	  }
 	  else {
-	    //printf("%zu\n",maxLine-cLine);
 	    // Ввод текста
 	    size_t inserted_len = stringAdds(buf.string[cLine],(int)cPos,buff);
 	    cPos += inserted_len; // обновляем позицию
