@@ -268,7 +268,7 @@ void openFile(Bufer *buf,const char* filename){
   while ((character = fgetc(sFile)) != EOF) {
     //putchar(character);
     if (character == '\n') {
-      buf->sz+=sizeof(char)*strlen(buf->string[cLine]->data);
+      buf->sz+=sizeof(char)*strlen(buf->string[cLine]->data);//пока так
       buf->rsz+=buf->string[cLine]->rLen;
       cLine++;
       maxLine++;
@@ -440,11 +440,6 @@ int main(int argc,char **argv) {
     case ConfigureNotify:
       // Handle the ConfigureNotify event
       XConfigureEvent* configureEvent = &event.xconfigure;
-      // Access event data like configureEvent->x, configureEvent->y,
-      // configureEvent->width, configureEvent->height, etc.
-      //printf("Window configured: x=%d, y=%d, width=%d, height=%d\n",
-      //     configureEvent->x, configureEvent->y,
-      //     configureEvent->width, configureEvent->height);
       //getSizeWindow(dpy,win,&xW,&xY);
       xW=configureEvent->width;
       xY=configureEvent->height;
@@ -465,10 +460,6 @@ int main(int argc,char **argv) {
 	    XftDrawStringUtf8(draw,&color,font,10,(i + 1) * 20,(const FcChar8*)buf.string[bufLineIndex]->data,buf.string[bufLineIndex]->len);
 	  }
 	  XftDrawDestroy(draw);
-	/*   int cursor_x = 10 + cPos * 8; */
-/* 	  int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	  XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	  XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
 	  drawcCursor(dpy,win,gc);
 	  //getSize
 	  printf("%d %d\n",xW,xY);
@@ -512,10 +503,6 @@ int main(int argc,char **argv) {
 	  XGlyphInfo ginfo;
 	  FcChar32 character = 'S';
 	  XftTextExtents32(dpy, font, &character, 1, &ginfo);
-	  /* int cursor_x = 10 + cPos * ginfo.width; */
-/* 	  int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	  XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	  XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
 	  drawcCursor(dpy,win,gc);
 	}
 	else if(keysym == XK_Right){
@@ -544,11 +531,6 @@ int main(int argc,char **argv) {
 	  XGlyphInfo ginfo;
 	  FcChar32 character = 'S';
 	  XftTextExtents32(dpy, font, &character, 1, &ginfo);
-	  //int cursor_x = 10 + cPos * ginfo.width;
-/* 	  int cursor_x = 10 + cPos * ginfo.width; */
-/* 	  int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	  XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	  XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
 	  drawcCursor(dpy,win,gc);
 	  //printf("Right\n");
 	}
@@ -617,10 +599,6 @@ int main(int argc,char **argv) {
 	    	XftDrawStringUtf8(draw,&color,font,10,(i + 1) * 20,(const FcChar8*)buf.string[bufLineIndex]->data,buf.string[bufLineIndex]->len);
 	      }
 	      XftDrawDestroy(draw);
-/* 	      int cursor_x = 10 + cPos * 8; */
-/* 	      int cursor_y = (cLine) * 20 - 15; */
-/* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	      XFillRectangle(dpy, win, gc, cursor_x, cursor_y, 8, 16); */
 	      drawcCursor(dpy,win,gc);
 	      //getSize
 	      printf("%d %d\n",xW,xY);
@@ -675,10 +653,6 @@ int main(int argc,char **argv) {
 	    BufAddString(&buf, cLine);
 	    // Обновляем отображение
 	    XClearWindow(dpy, win);
-/* 	    int cursor_x = 10 + cPos * 8; */
-/* 	    int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	    XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	    XFillRectangle(dpy,win,gc,cursor_x,cursor_y,8,16); */
 	    drawcCursor(dpy,win,gc);
 	    XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
 	    if (draw) {
@@ -702,10 +676,6 @@ int main(int argc,char **argv) {
 	    size_t tempM = maxLine-cLine;
 	    if(tempM==0){
 	      XClearArea(dpy,win,10,(cLine)*20+3,xW,xY, False);
-/* 	      int cursor_x = 10 + cPos * 8; */
-/* 	      int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	      XFillRectangle(dpy,win,gc,cursor_x,cursor_y,8,16); */
 	      drawcCursor(dpy,win,gc);
 	      XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
 	      if (draw) {
@@ -737,10 +707,6 @@ int main(int argc,char **argv) {
 	      for(;i<maxLine+1;i++){
 		XClearArea(dpy,win,10,(i)*20+3,xW,xY,False);
 	      }
-/* 	      int cursor_x = 10 + cPos * 8; */
-/* 	      int cursor_y = (cLine + 1) * 20 - 15; */
-/* 	      XSetForeground(dpy, gc, 0x00AA00); // черный цвет */
-/* 	      XFillRectangle(dpy,win,gc,cursor_x,cursor_y,8,16); */
 	      drawcCursor(dpy,win,gc);
 	      XftDraw *draw = XftDrawCreate(dpy,win,DefaultVisual(dpy, screen),DefaultColormap(dpy, screen));
 	      if (draw) {
